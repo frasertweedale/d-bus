@@ -8,6 +8,7 @@
 module DBus.Auth where
 
 import           Control.Monad.Except
+import           Control.Monad.Fail
 import           Control.Monad.Free
 import qualified Data.Attoparsec.ByteString as AP
 import qualified Data.Attoparsec.ByteString.Char8 as AP8
@@ -47,7 +48,7 @@ parseHexChar = do
                    (w >= 97 && w <= 102)
     fromHex w | w >= 48 && w <= 57  =  return $ fromIntegral (w - 48)
               | w >= 97             =  return $ fromIntegral (w - 87)
-    fromHex w = fail $ "Not a hex character: " <> show w
+    fromHex w = Control.Monad.Fail.fail $ "Not a hex character: " <> show w
 
 
 
@@ -130,6 +131,9 @@ newtype SASL a = SASL {unSASL :: ExceptT String (Free SASLF) a}
 instance MonadError String SASL where
     throwError = SASL . throwError
     catchError (SASL m) f = SASL $ catchError m (unSASL . f)
+
+instance MonadFail SASL where
+    fail = throwError
 
 saslSend :: ClientMessage -> SASL ()
 saslSend x = SASL . lift $ Free (Send x (return ()))
