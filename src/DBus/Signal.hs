@@ -40,10 +40,9 @@ matchAll :: MatchRule
 matchAll = MatchRule Nothing Nothing Nothing Nothing Nothing Nothing
                      [] [] Nothing Nothing
 
--- Left-biased monoid
-instance Monoid MatchRule where
-    mempty = matchAll
-    mappend lr rr =
+-- Left-biased <>
+instance Semigroup MatchRule where
+    lr <> rr =
         MatchRule
             { mrType          = mrType          lr `mplus` mrType          rr
             , mrSender        = mrSender        lr `mplus` mrSender        rr
@@ -57,6 +56,8 @@ instance Monoid MatchRule where
             , mrEavesdrop     = mrEavesdrop     lr `mplus` mrEavesdrop     rr
             }
 
+instance Monoid MatchRule where
+    mempty = matchAll
 
 
 renderRule :: MatchRule -> Text.Text

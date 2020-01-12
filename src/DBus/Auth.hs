@@ -14,7 +14,6 @@ import qualified Data.Attoparsec.ByteString.Char8 as AP8
 import           Data.Bits
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy.Builder as BS
-import           Data.Monoid
 import           Data.Word
 import           Numeric
 import qualified Data.Text as Text
