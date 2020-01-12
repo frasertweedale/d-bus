@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
@@ -435,7 +436,11 @@ instance Eq (DBusValue t) where
     DBVVariant (x ::DBusValue s1) ==  DBVVariant (y ::DBusValue s2) =
         let xt = sing :: Sing s1
             yt = sing :: Sing s2
+#if MIN_VERSION_singletons(2,4,0)
+        in case xt %== yt of -- Should be %~
+#else
         in case xt %:== yt of -- Should be %~
+#endif
            STrue  -> (unsafeCoerce x :: DBusValue t) == (unsafeCoerce y)
            SFalse -> False
 
